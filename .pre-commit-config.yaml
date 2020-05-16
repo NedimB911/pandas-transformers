@@ -8,7 +8,14 @@ repos:
         rev: 3.7.9
         hooks:
         - id: flake8
-
+    -   repo: local
+        hooks: 
+        -   id: pylint
+            name: pylint 
+            entry: pylint 
+            language: system 
+            types: [python]
+            
     -   repo: local 
         hooks: 
         -   id: pytest 
@@ -27,3 +34,6 @@ repos:
             stages: [commit]
             pass_filenames: false 
             always_run: true 
+        
+
+

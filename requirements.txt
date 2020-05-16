@@ -9,5 +9,6 @@ Sphinx
 coverage
 awscli
 flake8
+pylint 
 python-dotenv>=0.5.1
 tox 
