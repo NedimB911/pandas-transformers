@@ -1,0 +1,29 @@
+repos:
+    -   repo: https://github.com/ambv/black
+        rev: stable
+        hooks:
+        - id: black
+          language_version: python3.7
+    -   repo: https://gitlab.com/pycqa/flake8
+        rev: 3.7.9
+        hooks:
+        - id: flake8
+
+    -   repo: local 
+        hooks: 
+        -   id: pytest 
+            name: Run tests using pytest
+            entry: pytest
+            args:
+                [
+                    "tests",
+                    "--junitxml=.junit/test-results.xml",
+                    "--cov=src/pandas_transformers",
+                    "--cov-report=xml",
+                    "--cov-report=html"
+                ]
+            language: system
+            types: [python]
+            stages: [commit]
+            pass_filenames: false 
+            always_run: true 
