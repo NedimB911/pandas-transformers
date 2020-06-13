@@ -1,9 +1,3 @@
-# pylint: disable=missing-module-docstring
-
-
+# pylint: disable=missing-function-docstring
 def test():
-    """
-    Test docstring
-    """
-    print("hi")
-    print("holaa")
+    print("hello world")
