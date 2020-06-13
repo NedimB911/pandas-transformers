@@ -24,9 +24,9 @@ repos:
             args:
                 [
                     "tests",
-                    "--junitxml=.junit/test-results.xml",
+                    # "--junitxml=.junit/test-results.xml",
                     "--cov=src/pandas_transformers",
-                    "--cov-report=xml",
+                    # "--cov-report=xml",
                     "--cov-report=html"
                 ]
             language: system
