@@ -2,11 +2,14 @@
 # pylint: disable=arguments-differ
 # pylint: disable=unused-argument
 
-from typing import List
+from typing import List, Iterable
 
 from sklearn.utils.validation import check_is_fitted
 from sklearn.base import TransformerMixin
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 import pandas as pd
+import numpy as np
 
 from .utils import check_columns_exist, check_if_dataframe
 
@@ -142,3 +145,164 @@ class PandasOneHotEncoder(TransformerMixin):
                 f"Encountered categories not seen during fitting:"
                 f"{unseen_categories_dict}"
             )
+
+class PandasTfidfVectorizer(TfidfVectorizer):
+    """
+    PandasTfidfVectorizer
+
+    A pandas version for sklearn's tf-idf vectorizer. The PandasTfidfVectorizer
+    converts the sparse array returned by sklearn's tf-idf vectorizer into a dense
+    array and uses the feature names to convert it into a dataframe.
+
+
+    # https://www.datacamp.com/community/tutorials
+    # /super-multiple-inheritance-diamond-problem
+
+    # https://stackoverflow.com/questions/3277367
+    # /how-does-pythons-super-work-with-multiple-inheritance
+
+    Parameters
+    ----------
+    column: str (optional)
+        Column which we wish to apply the tf-idf vectorizer to. If no column is given,
+        then the input dataframe should be a pd.Series or a np.ndarray.
+    **kwargs
+        Keyword arguments for sklearn.feature_extraction.text.TfidfVectorizer
+
+    """
+
+    def __init__(self, column: str = None, **kwargs):
+
+        super().__init__(**kwargs)
+        self.column = column
+
+    # pylint: disable = arguments-differ
+    def fit(self, X: pd.DataFrame, y=None):
+        """
+        Fits the tf-idf vectorizer.
+
+        Parameters
+        ----------
+        X : pd.DataFrame or 1-d Iterable[str]
+        y : optional
+
+        """
+        if self.column is not None:
+            # In this case the input must be a dataframe
+            self._init_input_validation()
+            check_if_dataframe(X)
+            check_columns_exist(X, [self.column])
+            raw_documents = X[self.column]
+        else:
+            # if no column is given, the input must be a 1-d iterable
+            # (pd.Series or np array)
+            self._check_if_1d_series_or_np_array(X)
+            raw_documents = X
+
+        self._check_missing(raw_documents)
+
+        return super().fit(raw_documents, y)
+
+    # pylint: disable = arguments-differ
+    def transform(self, X: pd.DataFrame):
+        """
+        Transforms the input dataframe using the fitted tf-idf vectorizer.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+        if self.column is not None:
+            # In this case the input must be a dataframe
+            check_if_dataframe(X)
+            check_columns_exist(X, [self.column])
+            raw_documents = X[self.column]
+        else:
+            # if no column is given, the input must be a 1-d iterable
+            # (pd.Series or np array)
+            self._check_if_1d_series_or_np_array(X)
+            raw_documents = X
+
+        self._check_missing(raw_documents)
+        transformed = super().transform(raw_documents)
+
+        transformed_df = pd.DataFrame(
+            transformed.toarray(), columns=self.get_feature_names(), index=X.index
+        )
+
+        if self.column is not None:
+            transformed_df = pd.concat(
+                [X.drop(columns=[self.column]), transformed_df], axis=1
+            )
+
+        return transformed_df
+
+    def fit_transform(self, X: pd.DataFrame, y=None):
+        """
+        fit_transform
+
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+        y : optional
+
+        Returns
+        -------
+        pd.DataFrame
+        """
+
+        self.fit(X, y)
+        return self.transform(X)
+
+    def _init_input_validation(self):
+        """
+        Validates the __init__() inputs.
+        """
+
+        if not isinstance(self.column, str):
+            raise TypeError(
+                f"'column' argument should be a string. Got {type(self.column)}"
+            )
+
+    def _check_missing(self, raw_documents: Iterable[str]):
+        """
+        Checks whether the raw_documents have any missing values. If so, return
+        a ValueError.
+
+        Parameters
+        ----------
+        raw_documents : Iterable[str]
+
+        Raises
+        ------
+        ValueError
+
+        """
+
+        if raw_documents.isnull().any():
+            raise ValueError(
+                f"The {self.column} column contains None's. TfidfVectorizer requires"
+                " the column to not have any None's."
+            )
+
+    def _check_if_1d_series_or_np_array(self, obj):
+        if isinstance(obj, pd.Series) or isinstance(obj, np.ndarray):
+            if obj.ndim == 1:
+                return True
+            else:
+                raise TypeError(
+                    f"Input is of the correct type (pd.Series or np.ndarray)"
+                    f" However, not of the correct dimension. It should be 1d."
+                )
+        else:
+            raise TypeError(
+                f"If no column is given, the input should be either a pd.Series or a "
+                f"np.ndarray. Got {type(obj)} instead."
+            )
+
+
