@@ -292,19 +292,18 @@ class PandasTfidfVectorizer(TfidfVectorizer):
             )
 
     def _check_if_1d_series_or_np_array(self, obj):
-        if isinstance(obj, pd.Series) or isinstance(obj, np.ndarray):
+        if isinstance(obj, (pd.Series, np.ndarray)):
             if obj.ndim == 1:
                 return True
-            else:
-                raise TypeError(
-                    f"Input is of the correct type (pd.Series or np.ndarray)"
-                    f" However, not of the correct dimension. It should be 1d."
-                )
-        else:
             raise TypeError(
-                f"If no column is given, the input should be either a pd.Series or a "
-                f"np.ndarray. Got {type(obj)} instead."
+                "Input is of the correct type (pd.Series or np.ndarray)"
+                " However, not of the correct dimension. It should be 1d."
             )
+
+        raise TypeError(
+            f"If no column is given, the input should be either a pd.Series or a "
+            f"np.ndarray. Got {type(obj)} instead."
+        )
 
     def _get_param_names(self):
         tfidf_param_names = TfidfVectorizer._get_param_names()

@@ -1,12 +1,12 @@
 import pandas as pd
 import numpy as np
 import pytest
-
-from pandas_transformers.transformers import PandasOneHotEncoder, PandasTfidfVectorizer
 from sklearn.base import clone
 from sklearn.pipeline import Pipeline
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
+
+from pandas_transformers.transformers import PandasOneHotEncoder, PandasTfidfVectorizer
 
 
 class TestPandasOneHotEncoder:
@@ -178,6 +178,7 @@ class TestPandasTfidfVectorizer:
 
     @pytest.fixture
     def example_train_df_binary(self):
+        """Dataset with binary labels"""
         return pd.DataFrame({"text": ["house", "animal"] * 10, "y": [0, 1] * 10})
 
     @pytest.fixture
@@ -195,10 +196,12 @@ class TestPandasTfidfVectorizer:
 
     @pytest.fixture
     def example_series(self):
+        """Example dataste in pd.Series format"""
         return pd.Series(["house", "animal", "house"])
 
     @pytest.fixture
     def example_np_array(self):
+        """Example dataset in np.ndarray format"""
         return pd.Series(["house", "animal", "house"]).values
 
     def test_example(self, example_train_df):
@@ -259,7 +262,6 @@ class TestPandasTfidfVectorizer:
         In case we don't give a value for the column keyword argument, the input
         should be a pandas series or np.ndarray.
         Otherwise, return a TypeError.
-        
         """
 
         transformer = PandasTfidfVectorizer()
@@ -279,7 +281,6 @@ class TestPandasTfidfVectorizer:
         In case we do  give a value for the column keyword argument, the input
         should be a pd.DataFrame.
         Otherwise, return a TypeError.
-        
         """
 
         transformer = PandasTfidfVectorizer(column="text")
@@ -289,8 +290,8 @@ class TestPandasTfidfVectorizer:
     def test_fit_with_df_input_without_column_arg(self, example_train_df):
         """
         In case we give no column argument to the initalizer, the input during fit
-        should be a pd.Series. Otherwise raise TypeError. 
-        
+        should be a pd.Series. Otherwise raise TypeError.
+
         """
         transformer = PandasTfidfVectorizer()
         with pytest.raises(TypeError):
@@ -299,7 +300,7 @@ class TestPandasTfidfVectorizer:
     def test_clone(self):
         """
         Test clone
-        
+
         """
         transformer = PandasTfidfVectorizer(column="test", max_features=123)
         cloned = clone(transformer)
