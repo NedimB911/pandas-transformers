@@ -3,6 +3,10 @@ import numpy as np
 import pytest
 
 from pandas_transformers.transformers import PandasOneHotEncoder, PandasTfidfVectorizer
+from sklearn.base import clone
+from sklearn.pipeline import Pipeline
+from sklearn.model_selection import GridSearchCV
+from sklearn.linear_model import LogisticRegression
 
 
 class TestPandasOneHotEncoder:
@@ -160,6 +164,7 @@ class TestPandasOneHotEncoder:
             transformed.sort_index(axis=1), expected.sort_index(axis=1)
         )
 
+
 class TestPandasTfidfVectorizer:
     """
     Tests for the PandasTfidfVectorizer class
@@ -170,6 +175,10 @@ class TestPandasTfidfVectorizer:
     def example_train_df(self):
         """Example training dataset."""
         return pd.DataFrame({"text": ["house", "animal", "house"], "num": [3, 4, 4]})
+
+    @pytest.fixture
+    def example_train_df_binary(self):
+        return pd.DataFrame({"text": ["house", "animal"] * 10, "y": [0, 1] * 10})
 
     @pytest.fixture
     def example_missing_values_df(self):
@@ -273,7 +282,7 @@ class TestPandasTfidfVectorizer:
         
         """
 
-        transformer = PandasTfidfVectorizer(column='text')
+        transformer = PandasTfidfVectorizer(column="text")
         with pytest.raises(TypeError):
             transformer.fit(example_series)
 
@@ -286,3 +295,30 @@ class TestPandasTfidfVectorizer:
         transformer = PandasTfidfVectorizer()
         with pytest.raises(TypeError):
             transformer.fit(example_train_df)
+
+    def test_clone(self):
+        """
+        Test clone
+        
+        """
+        transformer = PandasTfidfVectorizer(column="test", max_features=123)
+        cloned = clone(transformer)
+
+        assert transformer.column == cloned.column
+        assert transformer.max_features == cloned.max_features
+
+    def test_grid_search(self, example_train_df_binary):
+        """Tests for grid search compatibility."""
+
+        pipe = Pipeline(
+            [("tfidf", PandasTfidfVectorizer()), ("model", LogisticRegression())]
+        )
+        param_grid = {
+            "tfidf__max_features": [5, 15],
+        }
+
+        X = example_train_df_binary["text"]
+        y = example_train_df_binary["y"]
+
+        search = GridSearchCV(pipe, param_grid)
+        search.fit(X, y)

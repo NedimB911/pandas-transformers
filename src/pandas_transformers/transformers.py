@@ -146,6 +146,7 @@ class PandasOneHotEncoder(TransformerMixin):
                 f"{unseen_categories_dict}"
             )
 
+
 class PandasTfidfVectorizer(TfidfVectorizer):
     """
     PandasTfidfVectorizer
@@ -305,4 +306,8 @@ class PandasTfidfVectorizer(TfidfVectorizer):
                 f"np.ndarray. Got {type(obj)} instead."
             )
 
-
+    def _get_param_names(self):
+        tfidf_param_names = TfidfVectorizer._get_param_names()
+        current_param_names = super()._get_param_names()
+        param_names = tfidf_param_names + current_param_names
+        return param_names
