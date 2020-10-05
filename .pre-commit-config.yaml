@@ -1,24 +1,28 @@
 repos:
+    -   repo: https://github.com/pre-commit/pre-commit-hooks
+        rev: v2.4.0
+        hooks:
+        - id: trailing-whitespace
     -   repo: https://github.com/ambv/black
         rev: stable
         hooks:
         - id: black
           language_version: python3.7
-    -   repo: https://gitlab.com/pycqa/flake8
-        rev: 3.7.9
-        hooks:
-        - id: flake8
+    # -   repo: https://gitlab.com/pycqa/flake8
+    #     rev: 3.7.9
+    #     hooks:
+    #     - id: flake8
+    # -   repo: local
+    #     hooks:
+    #     -   id: pylint
+    #         name: pylint
+    #         entry: pylint
+    #         language: system
+    #         types: [python]
+
     -   repo: local
-        hooks: 
-        -   id: pylint
-            name: pylint 
-            entry: pylint 
-            language: system 
-            types: [python]
-            
-    -   repo: local 
-        hooks: 
-        -   id: pytest 
+        hooks:
+        -   id: pytest
             name: Run tests using pytest
             entry: pytest
             args:
@@ -32,8 +36,8 @@ repos:
             language: system
             types: [python]
             stages: [commit]
-            pass_filenames: false 
-            always_run: true 
-        
+            pass_filenames: false
+            always_run: true
+
 
 
