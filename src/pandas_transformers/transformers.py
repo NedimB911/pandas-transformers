@@ -84,7 +84,7 @@ class PandasOneHotEncoder(TransformerMixin):
         self.categories_unfiltered_ = {}
 
         for col in self.columns:
-            counts = X[col].value_counts(dropna=False)
+            counts = X[col].value_counts(dropna=True)
             self.categories_[col] = list(
                 set(counts[counts >= self.min_frequency].index.tolist())
             )
