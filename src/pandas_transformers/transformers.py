@@ -99,7 +99,7 @@ class PandasOneHotEncoder(TransformerMixin):
 
         # pylint: disable=cell-var-from-loop
         for col in self.columns:
-            cat = pd.Categorical(self.categories_[col], ordered=True)
+            cat = pd.CategoricalDtype(self.categories_[col], ordered=True)
             X = X.assign(**{f"{col}": lambda _df: _df[col].astype(cat)})
 
         return pd.get_dummies(
