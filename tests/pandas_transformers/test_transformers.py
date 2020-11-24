@@ -125,7 +125,7 @@ class TestPandasOneHotEncoder:
         occur at all (e.g. in predefined categories)
 
         """
-        categ = pd.Categorical(["a", "b", "c"])
+        categ = pd.CategoricalDtype(["a", "b", "c"])
         example_train_df_extra_cat = example_train_df.assign(
             cat=lambda _df: _df["cat"].astype(categ)
         )
