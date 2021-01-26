@@ -1,5 +1,5 @@
 include MANIFEST.in
 include README.md
 include requirements.txt
-include requirements-dev.txt 
-include tox.ini 
+include requirements-dev.txt
+include tox.ini

@@ -269,7 +269,10 @@ class TestPandasTfidfVectorizer:
         transformed = transformer.transform(example_series)
 
         expected = pd.DataFrame(
-            {"animal": pd.Series([0.0, 1.0, 0.0]), "house": pd.Series([1.0, 0.0, 1.0]),}
+            {
+                "animal": pd.Series([0.0, 1.0, 0.0]),
+                "house": pd.Series([1.0, 0.0, 1.0]),
+            }
         )
 
         pd.testing.assert_frame_equal(
