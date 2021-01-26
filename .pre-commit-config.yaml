@@ -3,6 +3,10 @@ repos:
         rev: v2.4.0
         hooks:
         - id: trailing-whitespace
+        - id: mixed-line-ending
+        - id: end-of-file-fixer
+        - id: check-yaml
+        - id: check-ast
     -   repo: https://github.com/ambv/black
         rev: stable
         hooks:
@@ -37,6 +41,3 @@ repos:
             stages: [commit]
             pass_filenames: false
             always_run: true
-
-
-
