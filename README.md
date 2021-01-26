@@ -1,5 +1,6 @@
 pandas_transformers
 ==============================
+scikit-learn transformers that are compatible with pandas
 
 Tests
 =====
@@ -12,3 +13,8 @@ Second way
 Third way
 ```pip install -e .[dev]```
 ```pytest```
+
+TODO:
+- Add more transformers
+- Add environment.yml
+- Add MAKEFILE to easily create conda environment, run pre-commit / tests / etc.
